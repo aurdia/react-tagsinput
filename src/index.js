@@ -186,8 +186,10 @@ class TagsInput extends React.Component {
     return this.state.tag
   }
 
-  _addTags (tags) {
-    let {onChange, onValidationReject, onlyUnique, maxTags, value} = this.props
+  async _addTags (tags) {
+    let {onChange, onValidationReject, onlyUnique, maxTags, value, validate } = this.props
+
+    const asyncValidate = validate() instanceof Promise;
 
     if (onlyUnique) {
       tags = uniq(tags)
@@ -196,9 +198,22 @@ class TagsInput extends React.Component {
       )
     }
 
-    const rejectedTags = tags.filter(tag => !this._validate(this._getTagDisplayValue(tag)))
-    tags = tags.filter(tag => this._validate(this._getTagDisplayValue(tag)))
-    tags = tags.filter(tag => {
+    let rejectedTags = [];
+    let validTags = [];
+
+    for (let i = 0; i < tags.length; i++) {
+      const tag = tags[i];
+      let valid;
+      if (asyncValidate) {
+        valid = await this._validate(this._getTagDisplayValue(tag));
+      } else {
+        valid = this._validate(this._getTagDisplayValue(tag));
+      }
+      valid && validTags.push(tag);
+      !valid && rejectedTags.push(tag);
+    }
+
+    tags = validTags.filter(tag => {
       let tagDisplayValue = this._getTagDisplayValue(tag)
       if (typeof tagDisplayValue.trim === 'function') {
         return tagDisplayValue.trim().length > 0
@@ -237,6 +252,14 @@ class TagsInput extends React.Component {
 
   _validate (tag) {
     let {validate, validationRegex} = this.props
+
+    const asyncValidate = validate() instanceof Promise;
+    if (asyncValidate) {
+      return new Promise(async (resolve) => {
+        const validFunction = await validate(tag);
+        resolve(validFunction && validationRegex.test(tag));
+      });
+    }
 
     return validate(tag) && validationRegex.test(tag)
   }

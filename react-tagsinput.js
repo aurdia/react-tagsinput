@@ -27,6 +27,35 @@
     };
   }
 
+  function _asyncToGenerator(fn) {
+    return function () {
+      var gen = fn.apply(this, arguments);
+      return new Promise(function (resolve, reject) {
+        function step(key, arg) {
+          try {
+            var info = gen[key](arg);
+            var value = info.value;
+          } catch (error) {
+            reject(error);
+            return;
+          }
+
+          if (info.done) {
+            resolve(value);
+          } else {
+            return Promise.resolve(value).then(function (value) {
+              step("next", value);
+            }, function (err) {
+              step("throw", err);
+            });
+          }
+        }
+
+        return step("next");
+      });
+    };
+  }
+
   function _defineProperty(obj, key, value) {
     if (key in obj) {
       Object.defineProperty(obj, key, {
@@ -259,75 +288,170 @@
       }
     }, {
       key: '_addTags',
-      value: function _addTags(tags) {
-        var _this2 = this;
+      value: function () {
+        var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(tags) {
+          var _this2 = this;
 
-        var _props = this.props,
-            onChange = _props.onChange,
-            onValidationReject = _props.onValidationReject,
-            onlyUnique = _props.onlyUnique,
-            maxTags = _props.maxTags,
-            value = _props.value;
+          var _props, onChange, onValidationReject, onlyUnique, maxTags, value, validate, asyncValidate, rejectedTags, validTags, i, tag, valid, remainingLimit, newValue, indexes, _i;
+
+          return regeneratorRuntime.wrap(function _callee$(_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  _props = this.props, onChange = _props.onChange, onValidationReject = _props.onValidationReject, onlyUnique = _props.onlyUnique, maxTags = _props.maxTags, value = _props.value, validate = _props.validate;
+                  asyncValidate = validate() instanceof Promise;
 
 
-        if (onlyUnique) {
-          tags = uniq(tags);
-          tags = tags.filter(function (tag) {
-            return value.every(function (currentTag) {
-              return _this2._getTagDisplayValue(currentTag) !== _this2._getTagDisplayValue(tag);
-            });
-          });
+                  if (onlyUnique) {
+                    tags = uniq(tags);
+                    tags = tags.filter(function (tag) {
+                      return value.every(function (currentTag) {
+                        return _this2._getTagDisplayValue(currentTag) !== _this2._getTagDisplayValue(tag);
+                      });
+                    });
+                  }
+
+                  rejectedTags = [];
+                  validTags = [];
+                  i = 0;
+
+                case 6:
+                  if (!(i < tags.length)) {
+                    _context.next = 21;
+                    break;
+                  }
+
+                  tag = tags[i];
+                  valid = void 0;
+
+                  if (!asyncValidate) {
+                    _context.next = 15;
+                    break;
+                  }
+
+                  _context.next = 12;
+                  return this._validate(this._getTagDisplayValue(tag));
+
+                case 12:
+                  valid = _context.sent;
+                  _context.next = 16;
+                  break;
+
+                case 15:
+                  valid = this._validate(this._getTagDisplayValue(tag));
+
+                case 16:
+                  valid && validTags.push(tag);
+                  !valid && rejectedTags.push(tag);
+
+                case 18:
+                  i++;
+                  _context.next = 6;
+                  break;
+
+                case 21:
+
+                  tags = validTags.filter(function (tag) {
+                    var tagDisplayValue = _this2._getTagDisplayValue(tag);
+                    if (typeof tagDisplayValue.trim === 'function') {
+                      return tagDisplayValue.trim().length > 0;
+                    } else {
+                      return tagDisplayValue;
+                    }
+                  });
+
+                  if (maxTags >= 0) {
+                    remainingLimit = Math.max(maxTags - value.length, 0);
+
+                    tags = tags.slice(0, remainingLimit);
+                  }
+
+                  if (onValidationReject && rejectedTags.length > 0) {
+                    onValidationReject(rejectedTags);
+                  }
+
+                  if (!(tags.length > 0)) {
+                    _context.next = 31;
+                    break;
+                  }
+
+                  newValue = value.concat(tags);
+                  indexes = [];
+
+                  for (_i = 0; _i < tags.length; _i++) {
+                    indexes.push(value.length + _i);
+                  }
+                  onChange(newValue, tags, indexes);
+                  this._clearInput();
+                  return _context.abrupt('return', true);
+
+                case 31:
+                  if (!(rejectedTags.length > 0)) {
+                    _context.next = 33;
+                    break;
+                  }
+
+                  return _context.abrupt('return', false);
+
+                case 33:
+
+                  this._clearInput();
+                  return _context.abrupt('return', false);
+
+                case 35:
+                case 'end':
+                  return _context.stop();
+              }
+            }
+          }, _callee, this);
+        }));
+
+        function _addTags(_x) {
+          return _ref3.apply(this, arguments);
         }
 
-        var rejectedTags = tags.filter(function (tag) {
-          return !_this2._validate(_this2._getTagDisplayValue(tag));
-        });
-        tags = tags.filter(function (tag) {
-          return _this2._validate(_this2._getTagDisplayValue(tag));
-        });
-        tags = tags.filter(function (tag) {
-          var tagDisplayValue = _this2._getTagDisplayValue(tag);
-          if (typeof tagDisplayValue.trim === 'function') {
-            return tagDisplayValue.trim().length > 0;
-          } else {
-            return tagDisplayValue;
-          }
-        });
-
-        if (maxTags >= 0) {
-          var remainingLimit = Math.max(maxTags - value.length, 0);
-          tags = tags.slice(0, remainingLimit);
-        }
-
-        if (onValidationReject && rejectedTags.length > 0) {
-          onValidationReject(rejectedTags);
-        }
-
-        if (tags.length > 0) {
-          var newValue = value.concat(tags);
-          var indexes = [];
-          for (var i = 0; i < tags.length; i++) {
-            indexes.push(value.length + i);
-          }
-          onChange(newValue, tags, indexes);
-          this._clearInput();
-          return true;
-        }
-
-        if (rejectedTags.length > 0) {
-          return false;
-        }
-
-        this._clearInput();
-        return false;
-      }
+        return _addTags;
+      }()
     }, {
       key: '_validate',
       value: function _validate(tag) {
+        var _this3 = this;
+
         var _props2 = this.props,
             validate = _props2.validate,
             validationRegex = _props2.validationRegex;
 
+
+        var asyncValidate = validate() instanceof Promise;
+        if (asyncValidate) {
+          return new Promise(function () {
+            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(resolve) {
+              var validFunction;
+              return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                while (1) {
+                  switch (_context2.prev = _context2.next) {
+                    case 0:
+                      _context2.next = 2;
+                      return validate(tag);
+
+                    case 2:
+                      validFunction = _context2.sent;
+
+                      resolve(validFunction && validationRegex.test(tag));
+
+                    case 4:
+                    case 'end':
+                      return _context2.stop();
+                  }
+                }
+              }, _callee2, _this3);
+            }));
+
+            return function (_x2) {
+              return _ref4.apply(this, arguments);
+            };
+          }());
+        }
 
         return validate(tag) && validationRegex.test(tag);
       }
@@ -387,7 +511,7 @@
     }, {
       key: 'handlePaste',
       value: function handlePaste(e) {
-        var _this3 = this;
+        var _this4 = this;
 
         var _props3 = this.props,
             addOnPaste = _props3.addOnPaste,
@@ -402,7 +526,7 @@
 
         var data = getClipboardData(e);
         var tags = pasteSplit(data).map(function (tag) {
-          return _this3._makeTag(tag);
+          return _this4._makeTag(tag);
         });
 
         this._addTags(tags);
@@ -563,7 +687,7 @@
     }, {
       key: 'render',
       value: function render() {
-        var _this4 = this;
+        var _this5 = this;
 
         var _props6 = this.props,
             value = _props6.value,
@@ -601,15 +725,15 @@
           return renderTag(_extends({
             key: index,
             tag: tag,
-            onRemove: _this4.handleRemove.bind(_this4),
+            onRemove: _this5.handleRemove.bind(_this5),
             disabled: disabled,
-            getTagDisplayValue: _this4._getTagDisplayValue.bind(_this4)
+            getTagDisplayValue: _this5._getTagDisplayValue.bind(_this5)
           }, tagProps));
         });
 
         var inputComponent = renderInput(_extends({
           ref: function ref(r) {
-            _this4.input = r;
+            _this5.input = r;
           },
           value: this._tag(),
           onPaste: this.handlePaste.bind(this),
@@ -623,7 +747,7 @@
         return _react2.default.createElement(
           'div',
           { ref: function ref(r) {
-              _this4.div = r;
+              _this5.div = r;
             }, onClick: this.handleClick.bind(this), className: className },
           renderLayout(tagComponents, inputComponent)
         );
