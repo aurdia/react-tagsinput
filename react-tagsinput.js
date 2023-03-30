@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define('ReactTagsInput', ['module', 'exports', 'react', 'prop-types'], factory);
+    define('ReactTagsInput', ['module', 'exports', 'react', 'prop-types', 'regenerator-runtime'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(module, exports, require('react'), require('prop-types'));
+    factory(module, exports, require('react'), require('prop-types'), require('regenerator-runtime'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod, mod.exports, global.React, global.propTypes);
+    factory(mod, mod.exports, global.React, global.propTypes, global.regeneratorRuntime);
     global.ReactTagsInput = mod.exports;
   }
-})(this, function (module, exports, _react, _propTypes) {
+})(this, function (module, exports, _react, _propTypes, _regeneratorRuntime) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -20,6 +20,8 @@
   var _react2 = _interopRequireDefault(_react);
 
   var _propTypes2 = _interopRequireDefault(_propTypes);
+
+  var _regeneratorRuntime2 = _interopRequireDefault(_regeneratorRuntime);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -289,12 +291,12 @@
     }, {
       key: '_addTags',
       value: function () {
-        var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(tags) {
+        var _ref3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime2.default.mark(function _callee(tags) {
           var _this2 = this;
 
           var _props, onChange, onValidationReject, onlyUnique, maxTags, value, validate, asyncValidate, rejectedTags, validTags, i, tag, valid, remainingLimit, newValue, indexes, _i;
 
-          return regeneratorRuntime.wrap(function _callee$(_context) {
+          return _regeneratorRuntime2.default.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
@@ -425,9 +427,9 @@
         var asyncValidate = validate() instanceof Promise;
         if (asyncValidate) {
           return new Promise(function () {
-            var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(resolve) {
+            var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime2.default.mark(function _callee2(resolve) {
               var validFunction;
-              return regeneratorRuntime.wrap(function _callee2$(_context2) {
+              return _regeneratorRuntime2.default.wrap(function _callee2$(_context2) {
                 while (1) {
                   switch (_context2.prev = _context2.next) {
                     case 0:

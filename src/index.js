@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import regeneratorRuntime from 'regenerator-runtime'
 
 function uniq (arr) {
   let out = []
